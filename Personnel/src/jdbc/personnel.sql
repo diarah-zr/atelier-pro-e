@@ -6,26 +6,26 @@ CREATE TABLE Employe (
     poste VARCHAR(50),
     date_arrivee DATE,
     date_depart DATE,
-    numero_Ligues INT NULL
+    numero_Ligue INT NULL
 );
 
-CREATE TABLE Ligues (
-    numero_Ligues INT PRIMARY KEY,
+CREATE TABLE Ligue (
+    numero_Ligue INT PRIMARY KEY,
     nom_Ligue VARCHAR(50) NOT NULL,
-    numero_Employe INT NOT NULL
+    numero_Admin INT NOT NULL
 );
 
 
 ALTER TABLE Employe
 ADD CONSTRAINT fk_employe_ligue
-FOREIGN KEY (numero_Ligues)
-REFERENCES Ligues(numero_Ligues)
+FOREIGN KEY (numero_Ligue)
+REFERENCES Ligue(numero_Ligue)
 ON DELETE SET NULL
 ON UPDATE CASCADE;
 
-ALTER TABLE Ligues
-ADD CONSTRAINT fk_ligue_employe
-FOREIGN KEY (numero_Employe)
+ALTER TABLE Ligue
+ADD CONSTRAINT fk_ligue_admin
+FOREIGN KEY (numero_Admin)
 REFERENCES Employe(numero_Employe)
 ON DELETE RESTRICT
 ON UPDATE CASCADE;
