@@ -71,7 +71,7 @@ public class LigueConsole
 		Menu menu = new Menu("Editer " + ligue.getNom());
 		menu.add(afficher(ligue));
 		menu.add(gererEmployes(ligue));
-		//menu.add(changerAdministrateur(ligue));
+		menu.add(changerAdministrateur(ligue));
 		menu.add(changerNom(ligue));
 		menu.add(supprimer(ligue));
 		menu.addBack("q");
@@ -99,11 +99,11 @@ public class LigueConsole
 				{
 					ligue.addEmploye(getString("nom : "), 
 						getString("prenom : "), getString("mail : "), 
-						getString("password : "));
+						getString("password : "), null, null);
 				}
 		);
 	}
-	//ada
+	
 	
 	private Menu gererEmployes(Ligue ligue)
 	{
@@ -125,9 +125,19 @@ public class LigueConsole
 	}
 	
 	private List<Employe> changerAdministrateur(final Ligue ligue)
-	{
-		return null;
-	}		
+    {
+        return new List<>("Changer l'administrateur", "c", 
+                () -> new ArrayList<>(ligue.getEmployes()),
+                (employe) -> new Option("Définir"+ " " + employe.getNom() + " " +" comme administrateur", "a", 
+                        () -> 
+                        {
+                            ligue.setAdministrateur(employe);
+                            System.out.println(employe.getNom() + " " + employe.getPrenom() + 
+                                    " est maintenant l'administrateur de " + ligue.getNom());
+                        }
+                )
+        );
+    }		
 
 	private Menu menuActionsEmploye(Ligue ligue, Employe employe) {
 	    Menu menu = new Menu("Actions sur " + employe.getNom() + " " + employe.getPrenom());
@@ -142,5 +152,7 @@ public class LigueConsole
 	{
 		return new Option("Supprimer", "d", () -> {ligue.remove();});
 	}
+	
+	
 	
 }
