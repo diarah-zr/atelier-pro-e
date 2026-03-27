@@ -19,7 +19,7 @@ public class GestionPersonnel implements Serializable
 	private static final long serialVersionUID = -105283113987886425L;
 	private static GestionPersonnel gestionPersonnel = null;
 	private SortedSet<Ligue> ligues;
-	private Employe root = new Employe(this, null, "root", "", "", "toor", null, null);
+	private Employe root = null;
 	public final static int SERIALIZATION = 1, JDBC = 2, 
 			TYPE_PASSERELLE = JDBC;  
 	private static Passerelle passerelle = TYPE_PASSERELLE == JDBC ? new jdbc.JDBC() : new serialisation.Serialization();	
@@ -32,13 +32,13 @@ public class GestionPersonnel implements Serializable
 	
 	public static GestionPersonnel getGestionPersonnel()
 	{
-		if (gestionPersonnel == null)
-		{
-			gestionPersonnel = passerelle.getGestionPersonnel();
-			if (gestionPersonnel == null)
-				gestionPersonnel = new GestionPersonnel();
-		}
-		return gestionPersonnel;
+	    if (gestionPersonnel == null)
+	    {
+	        gestionPersonnel = passerelle.getGestionPersonnel();
+	        if (gestionPersonnel == null)
+	            gestionPersonnel = new GestionPersonnel();
+	    }
+	    return gestionPersonnel;
 	}
 
 	public GestionPersonnel()
@@ -102,6 +102,22 @@ public class GestionPersonnel implements Serializable
 	{
 		return passerelle.insert(ligue);
 	}
+	
+	int insert(Employe employe) throws SauvegardeImpossible
+	{
+	    return passerelle.insert(employe);
+	}
+
+	/**
+	 * Crée le root à partir de son nom et de son mot de passe,
+	 * l'insère en base de données et l'affecte à la variable root.
+	 */
+	public void addRoot(String nom, String password) throws SauvegardeImpossible
+	{
+	    root = new Employe(this, null, nom, "", "", password, null, null);
+	    // Le constructeur avec SauvegardeImpossible appelle gestionPersonnel.insert(this)
+	    // ce qui insère le root en BDD et renseigne son id automatiquement.
+	}
 
 	/**
 	 * Retourne le root (super-utilisateur).
@@ -111,5 +127,10 @@ public class GestionPersonnel implements Serializable
 	public Employe getRoot()
 	{
 		return root;
+	}
+	
+	public void setRoot(Employe employe)
+	{
+	    this.root = employe;
 	}
 }
