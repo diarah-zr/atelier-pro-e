@@ -113,7 +113,7 @@ public class LigueConsole
 		menu.add(selectionnerEmploye(ligue));
 		
 
-		 menu.add(selectionnerEmploye(ligue));		menu.addBack("q");
+		menu.addBack("q");
 		return menu;	
 	}
 
