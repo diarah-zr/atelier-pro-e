@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
 
 import personnel.*;
 
@@ -31,24 +32,78 @@ public class JDBC implements Passerelle
 	}
 	
 	@Override
-	public GestionPersonnel getGestionPersonnel() 
+	public GestionPersonnel getGestionPersonnel()
 	{
-		GestionPersonnel gestionPersonnel = new GestionPersonnel();
-		try 
-		{
-			String requete = "select * from ligue";
-			Statement instruction = connection.createStatement();
-			ResultSet ligues = instruction.executeQuery(requete);
-			while (ligues.next())
-				gestionPersonnel.addLigue(ligues.getInt(1), ligues.getString(2));
-		}
-		catch (SQLException e)
-		{
-			System.out.println(e);
-		}
-		return gestionPersonnel;
-	}
+	    GestionPersonnel gestionPersonnel = new GestionPersonnel();
+	    try
+	    {
+	        // ── Chargement du root ─────────────────────────────────────────
+	        String requeteRoot = "select numero_Employe, nom_Employe, prenom_Employe, " +
+	                             "mail_Employe, password_Employe " +
+	                             "from employe where numero_Ligue is null";
+	        Statement instruction = connection.createStatement();
+	        ResultSet rsRoot = instruction.executeQuery(requeteRoot);
+	        if (rsRoot.next())
+	        {
+	            gestionPersonnel.addRoot(
+	                rsRoot.getInt("numero_Employe"),
+	                rsRoot.getString("nom_Employe"),
+	                rsRoot.getString("prenom_Employe"),
+	                rsRoot.getString("mail_Employe"),
+	                rsRoot.getString("password_Employe"));
+	        }
+	        else
+	        {
+	            gestionPersonnel.addRoot("root", "toor");
+	        }
 
+	        // ── Chargement des ligues ──────────────────────────────────────
+	        String requeteLigues = "select numero_Ligue, nom_Ligue from ligue";
+	        ResultSet ligues = instruction.executeQuery(requeteLigues);
+	        while (ligues.next())
+	            gestionPersonnel.addLigue(ligues.getInt("numero_Ligue"), ligues.getString("nom_Ligue"));
+
+	        // ── Chargement des employés ────────────────────────────────────
+	        String requeteEmployes = "select numero_Employe, nom_Employe, prenom_Employe, " +
+	                                 "mail_Employe, password_Employe, numero_Ligue, " +
+	                                 "date_arrivee, date_depart " +
+	                                 "from employe where numero_Ligue is not null";
+	        ResultSet employes = instruction.executeQuery(requeteEmployes);
+	        while (employes.next())
+	        {
+	            // Retrouver la ligue correspondante
+	            int numeroLigue = employes.getInt("numero_Ligue");
+	            Ligue ligue = gestionPersonnel.getLigues().stream()
+	                .filter(l -> l.getId() == numeroLigue)
+	                .findFirst()
+	                .orElse(null);
+
+	            if (ligue != null)
+	            {
+	                // Lire les dates (peuvent être null)
+	                LocalDate dateArrivee = employes.getDate("date_arrivee") != null
+	                    ? employes.getDate("date_arrivee").toLocalDate() : null;
+	                LocalDate dateDepart = employes.getDate("date_depart") != null
+	                    ? employes.getDate("date_depart").toLocalDate() : null;
+
+	                // Utiliser addEmploye avec id (sans réinsertion)
+	                ligue.addEmploye(
+	                    employes.getInt("numero_Employe"),
+	                    employes.getString("nom_Employe"),
+	                    employes.getString("prenom_Employe"),
+	                    employes.getString("mail_Employe"),
+	                    employes.getString("password_Employe"),
+	                    dateArrivee,
+	                    dateDepart);
+	            }
+	        }
+	    }
+	    catch (SQLException | SauvegardeImpossible e)
+	    {
+	        System.out.println(e);
+	    }
+	    return gestionPersonnel;
+	}
 	@Override
 	public void sauvegarderGestionPersonnel(GestionPersonnel gestionPersonnel) throws SauvegardeImpossible 
 	{
@@ -86,5 +141,34 @@ public class JDBC implements Passerelle
 			exception.printStackTrace();
 			throw new SauvegardeImpossible(exception);
 		}		
+	}
+	
+	@Override
+	public int insert(Employe employe) throws SauvegardeImpossible
+	{
+	    try
+	    {
+	    	PreparedStatement instruction = connection.prepareStatement(
+	    		    "insert into employe (nom_Employe, prenom_Employe, mail_Employe, password_Employe, numero_Ligue) " +
+	    		    "values (?, ?, ?, ?, ?)",
+	    		    Statement.RETURN_GENERATED_KEYS);
+	    		instruction.setString(1, employe.getNom());
+	    		instruction.setString(2, employe.getPrenom());
+	    		instruction.setString(3, employe.getMail()); 
+	    		instruction.setString(4, employe.getPassword());
+	    		if (employe.getLigue() != null)
+	    		    instruction.setInt(5, employe.getLigue().getId());
+	    		else
+	    		    instruction.setNull(5, java.sql.Types.INTEGER);    
+	        instruction.executeUpdate();
+	        ResultSet id = instruction.getGeneratedKeys();
+	        id.next();
+	        return id.getInt(1);
+	    }
+	    catch (SQLException exception)
+	    {
+	        exception.printStackTrace();
+	        throw new SauvegardeImpossible(exception);
+	    }
 	}
 }

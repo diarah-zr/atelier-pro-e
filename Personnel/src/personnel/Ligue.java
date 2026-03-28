@@ -72,6 +72,16 @@ public class Ligue implements Serializable, Comparable<Ligue>
 	{
 		return administrateur;
 	}
+	
+	// Surcharge pour charger depuis la BDD (sans insertion)
+	public Employe addEmploye(int id, String nom, String prenom, String mail,
+	        String password, LocalDate dateArrivee, LocalDate dateDepart)
+	{
+	    Employe employe = new Employe(this.gestionPersonnel, id, this, nom, prenom,
+	            mail, password, dateArrivee, dateDepart);
+	    employes.add(employe);
+	    return employe;
+	}
 
 	/**
 	 * Fait de administrateur l'administrateur de la ligue.
@@ -109,9 +119,10 @@ public class Ligue implements Serializable, Comparable<Ligue>
 	 * @param dateDepart 
 	 * @param dateArrivee 
 	 * @return l'employé créé. 
+	 * @throws SauvegardeImpossible 
 	 */
 
-	public Employe addEmploye(String nom, String prenom, String mail, String password, LocalDate dateArrivee, LocalDate dateDepart)
+	public Employe addEmploye(String nom, String prenom, String mail, String password, LocalDate dateArrivee, LocalDate dateDepart) throws SauvegardeImpossible
 	{
 		Employe employe = new Employe(this.gestionPersonnel, this, nom, prenom, mail, password, dateArrivee, dateDepart);
 		employes.add(employe);
@@ -144,5 +155,10 @@ public class Ligue implements Serializable, Comparable<Ligue>
 	public String toString()
 	{
 		return nom;
+	}
+
+	public int getId() {
+		
+		return id;
 	}
 }

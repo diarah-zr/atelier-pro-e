@@ -97,9 +97,14 @@ public class LigueConsole
 		return new Option("ajouter un employé", "a",
 				() -> 
 				{
-					ligue.addEmploye(getString("nom : "), 
-						getString("prenom : "), getString("mail : "), 
-						getString("password : "), null, null);
+					try {
+						ligue.addEmploye(getString("nom : "), 
+							getString("prenom : "), getString("mail : "), 
+							getString("password : "), null, null);
+					} catch (SauvegardeImpossible e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 		);
 	}
@@ -112,8 +117,7 @@ public class LigueConsole
 		menu.add(ajouterEmploye(ligue));
 		menu.add(selectionnerEmploye(ligue));
 		
-
-		 menu.add(selectionnerEmploye(ligue));		menu.addBack("q");
+		 menu.addBack("q");
 		return menu;	
 	}
 

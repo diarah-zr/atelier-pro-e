@@ -13,32 +13,39 @@ import java.time.LocalDate;
 
 public class Employe implements Serializable, Comparable<Employe>
 {
-	private static final long serialVersionUID = 4795721718037994734L;
-	private String nom, prenom, password, mail;
-	private Ligue ligue;
-	private GestionPersonnel gestionPersonnel;
-	private LocalDate dateArrivee;
-	private LocalDate dateDepart;
-	
-	public Employe(GestionPersonnel gestionPersonnel, Ligue ligue, String nom, String prenom, 
-			String mail, String password, LocalDate dateArrivee, LocalDate dateDepart)
-	{
-		this.gestionPersonnel = gestionPersonnel;
-		this.nom = nom;
-		this.prenom = prenom;
-		this.password = password;
-		this.mail = mail;
-		this.ligue = ligue;
-		
-		// Validation des dates
-		if (dateArrivee != null && dateDepart != null && dateDepart.isBefore(dateArrivee))
-		{
-			throw new ExceptionsEmploye.DatesIncoherentes();
-		}
-		
-		this.dateArrivee = dateArrivee;
-		this.dateDepart = dateDepart;
-	}
+    private static final long serialVersionUID = 4795721718037994734L;
+    private int id = -1;                         
+    private String nom, prenom, password, mail;
+    private Ligue ligue;
+    private GestionPersonnel gestionPersonnel;
+    private LocalDate dateArrivee;
+    private LocalDate dateDepart;
+
+    
+    Employe(GestionPersonnel gestionPersonnel, Ligue ligue, String nom, String prenom,
+            String mail, String password, LocalDate dateArrivee, LocalDate dateDepart)
+            throws SauvegardeImpossible
+    {
+        this(gestionPersonnel, -1, ligue, nom, prenom, mail, password, dateArrivee, dateDepart);
+        this.id = gestionPersonnel.insert(this);
+    }
+
+
+    Employe(GestionPersonnel gestionPersonnel, int id, Ligue ligue, String nom, String prenom,
+            String mail, String password, LocalDate dateArrivee, LocalDate dateDepart)
+    {
+        this.gestionPersonnel = gestionPersonnel;
+        this.id = id;
+        this.ligue = ligue;
+        this.nom = nom;
+        this.prenom = prenom;
+        this.mail = mail;
+        this.password = password;
+        this.dateArrivee = dateArrivee;
+        this.dateDepart = dateDepart;
+    }
+    
+    public int getId() { return id; }
 	
 	/**
 	 * Retourne vrai ssi l'employé est administrateur de la ligue 
@@ -147,41 +154,37 @@ public class Employe implements Serializable, Comparable<Employe>
 		this.password = password;
 	}
 
-	
+	public String getPassword()
+	{
+		return password;
+	}
+
 	public Ligue getLigue()
 	{
 		return ligue;
 	}
-	
 	
 	public LocalDate getDateArrivee()
 	{
 		return dateArrivee;
 	}
 	
-	
 	public void setDateArrivee(LocalDate dateArrivee)
 	{
 		if (dateArrivee != null && this.dateDepart != null && this.dateDepart.isBefore(dateArrivee))
-		{
 			throw new ExceptionsEmploye.DatesIncoherentes();
-		}
 		this.dateArrivee = dateArrivee;
 	}
-	
 	
 	public LocalDate getDateDepart()
 	{
 		return dateDepart;
 	}
 	
-	
 	public void setDateDepart(LocalDate dateDepart)
 	{
 		if (this.dateArrivee != null && dateDepart != null && dateDepart.isBefore(this.dateArrivee))
-		{
 			throw new ExceptionsEmploye.DatesIncoherentes();
-		}
 		this.dateDepart = dateDepart;
 	}
 
