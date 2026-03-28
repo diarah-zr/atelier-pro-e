@@ -2,6 +2,7 @@ CREATE TABLE Employe (
     numero_Employe INT PRIMARY KEY,
     nom_Employe VARCHAR(50) NOT NULL,
     prenom_Employe VARCHAR(50) NOT NULL,
+    mail_Employe VARCHAR(100),
     password_Employe VARCHAR(255) NOT NULL,
     date_arrivee DATE,
     date_depart DATE,

@@ -161,4 +161,8 @@ public class Ligue implements Serializable, Comparable<Ligue>
 		
 		return id;
 	}
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> d3295f76782da4334aebf3c7cc0b1579a1907e13

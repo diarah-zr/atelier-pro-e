@@ -30,21 +30,42 @@ public class Employe implements Serializable, Comparable<Employe>
         this.id = gestionPersonnel.insert(this);
     }
 
+<<<<<<< HEAD
 
     Employe(GestionPersonnel gestionPersonnel, int id, Ligue ligue, String nom, String prenom,
+=======
+    
+    public Employe(GestionPersonnel gestionPersonnel, int id, Ligue ligue, String nom, String prenom,
+>>>>>>> d3295f76782da4334aebf3c7cc0b1579a1907e13
             String mail, String password, LocalDate dateArrivee, LocalDate dateDepart)
     {
         this.gestionPersonnel = gestionPersonnel;
         this.id = id;
+<<<<<<< HEAD
         this.ligue = ligue;
         this.nom = nom;
         this.prenom = prenom;
         this.mail = mail;
         this.password = password;
+=======
+        this.nom = nom;
+        this.prenom = prenom;
+        this.password = password;
+        this.mail = mail;
+        this.ligue = ligue;
+
+        if (dateArrivee != null && dateDepart != null && dateDepart.isBefore(dateArrivee))
+            throw new ExceptionsEmploye.DatesIncoherentes();
+
+>>>>>>> d3295f76782da4334aebf3c7cc0b1579a1907e13
         this.dateArrivee = dateArrivee;
         this.dateDepart = dateDepart;
     }
     
+<<<<<<< HEAD
+=======
+    
+>>>>>>> d3295f76782da4334aebf3c7cc0b1579a1907e13
     public int getId() { return id; }
 	
 	/**
@@ -224,5 +245,10 @@ public class Employe implements Serializable, Comparable<Employe>
 		else
 			res += ligue.toString();
 		return res + ")";
+	}
+
+
+	public String getPassword() {
+		return password;
 	}
 }
