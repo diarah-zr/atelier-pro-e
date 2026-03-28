@@ -37,20 +37,14 @@ public class JDBC implements Passerelle
 	    GestionPersonnel gestionPersonnel = new GestionPersonnel();
 	    try
 	    {
-<<<<<<< HEAD
 	        // ── Chargement du root ─────────────────────────────────────────
 	        String requeteRoot = "select numero_Employe, nom_Employe, prenom_Employe, " +
 	                             "mail_Employe, password_Employe " +
-=======
-	        
-	        String requeteRoot = "select numero_Employe, nom_Employe, prenom_Employe, mail_Employe, password_Employe " +
->>>>>>> d3295f76782da4334aebf3c7cc0b1579a1907e13
 	                             "from employe where numero_Ligue is null";
 	        Statement instruction = connection.createStatement();
 	        ResultSet rsRoot = instruction.executeQuery(requeteRoot);
 	        if (rsRoot.next())
 	        {
-<<<<<<< HEAD
 	            gestionPersonnel.addRoot(
 	                rsRoot.getInt("numero_Employe"),
 	                rsRoot.getString("nom_Employe"),
@@ -62,37 +56,6 @@ public class JDBC implements Passerelle
 	        {
 	            gestionPersonnel.addRoot("root", "toor");
 	        }
-=======
-	            
-	            gestionPersonnel.setRoot(new Employe(
-	                gestionPersonnel,
-	                rsRoot.getInt("numero_Employe"),
-	                null,
-	                rsRoot.getString("nom_Employe"),
-	                rsRoot.getString("prenom_Employe"),
-	                rsRoot.getString("mail_Employe"),
-	                rsRoot.getString("password_Employe"),
-	                null, null));
-	        }
-	        else
-	        {
-	           
-	            gestionPersonnel.addRoot("root", "toor");
-	        }
-
-	        
-	        String requeteLigues = "select numero_Ligue, nom_Ligue from ligue";
-	        ResultSet ligues = instruction.executeQuery(requeteLigues);
-	        while (ligues.next())
-	            gestionPersonnel.addLigue(ligues.getInt("numero_Ligue"), ligues.getString("nom_Ligue"));
-	    }
-	    catch (SQLException | SauvegardeImpossible e)
-	    {
-	        System.out.println(e);
-	    }
-	    return gestionPersonnel;
-	}
->>>>>>> d3295f76782da4334aebf3c7cc0b1579a1907e13
 
 	        // ── Chargement des ligues ──────────────────────────────────────
 	        String requeteLigues = "select numero_Ligue, nom_Ligue from ligue";
@@ -202,14 +165,30 @@ public class JDBC implements Passerelle
 	        id.next();
 	        return id.getInt(1);
 	    }
+	    
+	    catch (SQLException exception)
+	    
+	    {
+	        exception.printStackTrace();
+	        throw new SauvegardeImpossible(exception);
+	    }
+	}
+	@Override
+	public void update(Ligue ligue) throws SauvegardeImpossible
+	{
+	    try
+	    {
+	        PreparedStatement instruction = connection.prepareStatement(
+	            "update ligue set nom_Ligue = ?, numero_Admin = ? where numero_Ligue = ?");
+	        instruction.setString(1, ligue.getNom());
+	        instruction.setInt(2, ligue.getAdministrateur().getId());
+	        instruction.setInt(3, ligue.getId());
+	        instruction.executeUpdate();
+	    }
 	    catch (SQLException exception)
 	    {
 	        exception.printStackTrace();
 	        throw new SauvegardeImpossible(exception);
 	    }
 	}
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> d3295f76782da4334aebf3c7cc0b1579a1907e13

@@ -58,10 +58,6 @@ public class Ligue implements Serializable, Comparable<Ligue>
 	 * @param nom le nouveau nom de la ligue.
 	 */
 
-	public void setNom(String nom)
-	{
-		this.nom = nom;
-	}
 
 	/**
 	 * Retourne l'administrateur de la ligue.
@@ -91,14 +87,34 @@ public class Ligue implements Serializable, Comparable<Ligue>
 	 * @param administrateur le nouvel administrateur de la ligue.
 	 */
 	
-	public void setAdministrateur(Employe administrateur)
+	public void setNom(String nom)
 	{
-		Employe root = gestionPersonnel.getRoot();
-		if (administrateur != root && administrateur.getLigue() != this)
-			throw new DroitsInsuffisants();
-		this.administrateur = administrateur;
+	    this.nom = nom;
+	    try
+	    {
+	        gestionPersonnel.update(this);
+	    }
+	    catch (SauvegardeImpossible e)
+	    {
+	        System.out.println("Erreur lors de la mise à jour de la ligue : " + e.getMessage());
+	    }
 	}
 
+	public void setAdministrateur(Employe administrateur)
+	{
+	    Employe root = gestionPersonnel.getRoot();
+	    if (administrateur != root && administrateur.getLigue() != this)
+	        throw new DroitsInsuffisants();
+	    this.administrateur = administrateur;
+	    try
+	    {
+	        gestionPersonnel.update(this);
+	    }
+	    catch (SauvegardeImpossible e)
+	    {
+	        System.out.println("Erreur lors de la mise à jour de la ligue : " + e.getMessage());
+	    }
+	}
 	/**
 	 * Retourne les employés de la ligue.
 	 * @return les employés de la ligue dans l'ordre alphabétique.
@@ -161,8 +177,4 @@ public class Ligue implements Serializable, Comparable<Ligue>
 		
 		return id;
 	}
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> d3295f76782da4334aebf3c7cc0b1579a1907e13

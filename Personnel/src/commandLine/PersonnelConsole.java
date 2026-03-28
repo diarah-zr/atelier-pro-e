@@ -73,21 +73,12 @@ public class PersonnelConsole
 	
 	public static void main(String[] args)
 	{
-		PersonnelConsole personnelConsole = 
-				new PersonnelConsole(GestionPersonnel.getGestionPersonnel());
-
-
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-			personnelConsole.start();
+	    PersonnelConsole personnelConsole = 
+	            new PersonnelConsole(GestionPersonnel.getGestionPersonnel());
+	    
+	    while (!personnelConsole.verifiePassword())
+	        ;
+	    
+	    personnelConsole.start();
 	}
 }

@@ -24,11 +24,7 @@ public class GestionPersonnel implements Serializable
 	private Employe root = null;
 	public final static int SERIALIZATION = 1, JDBC = 2, 
 			TYPE_PASSERELLE = JDBC;  
-<<<<<<< HEAD
 	private static Passerelle passerelle = TYPE_PASSERELLE == JDBC ? new JDBC() : new Serialization();	
-=======
-	private static Passerelle passerelle = TYPE_PASSERELLE == JDBC ? new jdbc.JDBC() : new serialisation.Serialization();	
->>>>>>> d3295f76782da4334aebf3c7cc0b1579a1907e13
 	
 	/**
 	 * Retourne l'unique instance de cette classe.
@@ -113,7 +109,11 @@ public class GestionPersonnel implements Serializable
 	{
 	    return passerelle.insert(employe);
 	}
-
+	
+	void update(Ligue ligue) throws SauvegardeImpossible
+	{
+	    passerelle.update(ligue);
+	}
 	/**
 	 * Crée le root à partir de son nom et de son mot de passe,
 	 * l'insère en base de données et l'affecte à la variable root.
@@ -124,14 +124,11 @@ public class GestionPersonnel implements Serializable
 	    // Le constructeur avec SauvegardeImpossible appelle gestionPersonnel.insert(this)
 	    // ce qui insère le root en BDD et renseigne son id automatiquement.
 	}
-<<<<<<< HEAD
 	
 	public void addRoot(int id, String nom, String prenom, String mail, String password)
 	{
 	    root = new Employe(this, id, null, nom, prenom, mail, password, null, null);
 	}
-=======
->>>>>>> d3295f76782da4334aebf3c7cc0b1579a1907e13
 
 	/**
 	 * Retourne le root (super-utilisateur).
@@ -147,8 +144,4 @@ public class GestionPersonnel implements Serializable
 	{
 	    this.root = employe;
 	}
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> d3295f76782da4334aebf3c7cc0b1579a1907e13

@@ -117,12 +117,7 @@ public class LigueConsole
 		menu.add(ajouterEmploye(ligue));
 		menu.add(selectionnerEmploye(ligue));
 		
-<<<<<<< HEAD
 		 menu.addBack("q");
-=======
-
-		menu.addBack("q");
->>>>>>> d3295f76782da4334aebf3c7cc0b1579a1907e13
 		return menu;	
 	}
 
