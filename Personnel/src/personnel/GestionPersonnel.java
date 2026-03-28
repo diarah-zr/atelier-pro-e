@@ -114,6 +114,10 @@ public class GestionPersonnel implements Serializable
 	{
 	    passerelle.update(ligue);
 	}
+	void update(Employe employe) throws SauvegardeImpossible
+	{
+	    passerelle.update(employe);
+	}
 	/**
 	 * Crée le root à partir de son nom et de son mot de passe,
 	 * l'insère en base de données et l'affecte à la variable root.

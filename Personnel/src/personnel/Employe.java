@@ -88,47 +88,48 @@ public class Employe implements Serializable, Comparable<Employe>
 	
 	public void setNom(String nom)
 	{
-		this.nom = nom;
+	    this.nom = nom;
+	    try { gestionPersonnel.update(this); }
+	    catch (SauvegardeImpossible e) { System.out.println("Erreur mise à jour employé : " + e.getMessage()); }
 	}
-
-	/**
-	 * Retourne le prénom de l'employé.
-	 * @return le prénom de l'employé.
-	 */
-	
-	public String getPrenom()
-	{
-		return prenom;
-	}
-	
-	/**
-	 * Change le prénom de l'employé.
-	 * @param prenom le nouveau prénom de l'employé. 
-	 */
 
 	public void setPrenom(String prenom)
 	{
-		this.prenom = prenom;
+	    this.prenom = prenom;
+	    try { gestionPersonnel.update(this); }
+	    catch (SauvegardeImpossible e) { System.out.println("Erreur mise à jour employé : " + e.getMessage()); }
 	}
-
-	/**
-	 * Retourne le mail de l'employé.
-	 * @return le mail de l'employé.
-	 */
-	
-	public String getMail()
-	{
-		return mail;
-	}
-	
-	/**
-	 * Change le mail de l'employé.
-	 * @param mail le nouveau mail de l'employé.
-	 */
 
 	public void setMail(String mail)
 	{
-		this.mail = mail;
+	    this.mail = mail;
+	    try { gestionPersonnel.update(this); }
+	    catch (SauvegardeImpossible e) { System.out.println("Erreur mise à jour employé : " + e.getMessage()); }
+	}
+
+	public void setPassword(String password)
+	{
+	    this.password = password;
+	    try { gestionPersonnel.update(this); }
+	    catch (SauvegardeImpossible e) { System.out.println("Erreur mise à jour employé : " + e.getMessage()); }
+	}
+
+	public void setDateArrivee(LocalDate dateArrivee)
+	{
+	    if (dateArrivee != null && this.dateDepart != null && this.dateDepart.isBefore(dateArrivee))
+	        throw new ExceptionsEmploye.DatesIncoherentes();
+	    this.dateArrivee = dateArrivee;
+	    try { gestionPersonnel.update(this); }
+	    catch (SauvegardeImpossible e) { System.out.println("Erreur mise à jour employé : " + e.getMessage()); }
+	}
+
+	public void setDateDepart(LocalDate dateDepart)
+	{
+	    if (this.dateArrivee != null && dateDepart != null && dateDepart.isBefore(this.dateArrivee))
+	        throw new ExceptionsEmploye.DatesIncoherentes();
+	    this.dateDepart = dateDepart;
+	    try { gestionPersonnel.update(this); }
+	    catch (SauvegardeImpossible e) { System.out.println("Erreur mise à jour employé : " + e.getMessage()); }
 	}
 
 	/**
@@ -149,10 +150,7 @@ public class Employe implements Serializable, Comparable<Employe>
 	 * @param password le nouveau password de l'employé. 
 	 */
 	
-	public void setPassword(String password)
-	{
-		this.password = password;
-	}
+	
 
 	public String getPassword()
 	{
@@ -164,29 +162,16 @@ public class Employe implements Serializable, Comparable<Employe>
 		return ligue;
 	}
 	
-	public LocalDate getDateArrivee()
-	{
-		return dateArrivee;
-	}
 	
-	public void setDateArrivee(LocalDate dateArrivee)
-	{
-		if (dateArrivee != null && this.dateDepart != null && this.dateDepart.isBefore(dateArrivee))
-			throw new ExceptionsEmploye.DatesIncoherentes();
-		this.dateArrivee = dateArrivee;
-	}
+	
+	
 	
 	public LocalDate getDateDepart()
 	{
 		return dateDepart;
 	}
 	
-	public void setDateDepart(LocalDate dateDepart)
-	{
-		if (this.dateArrivee != null && dateDepart != null && dateDepart.isBefore(this.dateArrivee))
-			throw new ExceptionsEmploye.DatesIncoherentes();
-		this.dateDepart = dateDepart;
-	}
+	
 
 	/**
 	 * Supprime l'employé. Si celui-ci est un administrateur, le root
@@ -209,10 +194,10 @@ public class Employe implements Serializable, Comparable<Employe>
 	@Override
 	public int compareTo(Employe autre)
 	{
-		int cmp = getNom().compareTo(autre.getNom());
-		if (cmp != 0)
-			return cmp;
-		return getPrenom().compareTo(autre.getPrenom());
+	    int cmp = getNom().compareTo(autre.getNom());
+	    if (cmp != 0)
+	        return cmp;
+	    return getPrenom().compareTo(autre.getPrenom()); // ← corrigé
 	}
 	
 	@Override
@@ -224,5 +209,21 @@ public class Employe implements Serializable, Comparable<Employe>
 		else
 			res += ligue.toString();
 		return res + ")";
+	}
+
+
+	public String getPrenom() {
+		// TODO Auto-generated method stub
+		return prenom;
+	}
+
+
+	public String getMail() {
+		// TODO Auto-generated method stub
+		return mail;
+	}
+	public LocalDate getDateArrivee()
+	{
+	    return dateArrivee;
 	}
 }

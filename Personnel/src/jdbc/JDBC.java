@@ -129,8 +129,10 @@ public class JDBC implements Passerelle
 		try 
 		{
 			PreparedStatement instruction;
-			instruction = connection.prepareStatement("insert into ligue (nom) values(?)", Statement.RETURN_GENERATED_KEYS);
-			instruction.setString(1, ligue.getNom());		
+			instruction = connection.prepareStatement(
+				    "insert into ligue (nom_Ligue, numero_Admin) values(?, ?)", Statement.RETURN_GENERATED_KEYS);
+				instruction.setString(1, ligue.getNom());
+				instruction.setInt(2, ligue.getAdministrateur().getId());		
 			instruction.executeUpdate();
 			ResultSet id = instruction.getGeneratedKeys();
 			id.next();
@@ -183,6 +185,31 @@ public class JDBC implements Passerelle
 	        instruction.setString(1, ligue.getNom());
 	        instruction.setInt(2, ligue.getAdministrateur().getId());
 	        instruction.setInt(3, ligue.getId());
+	        instruction.executeUpdate();
+	    }
+	    catch (SQLException exception)
+	    {
+	        exception.printStackTrace();
+	        throw new SauvegardeImpossible(exception);
+	    }
+	}
+	@Override
+	public void update(Employe employe) throws SauvegardeImpossible
+	{
+	    try
+	    {
+	        PreparedStatement instruction = connection.prepareStatement(
+	            "update employe set nom_Employe = ?, prenom_Employe = ?, " +
+	            "mail_Employe = ?, password_Employe = ?, " +
+	            "date_arrivee = ?, date_depart = ? " +
+	            "where numero_Employe = ?");
+	        instruction.setString(1, employe.getNom());
+	        instruction.setString(2, employe.getPrenom());
+	        instruction.setString(3, employe.getMail());
+	        instruction.setString(4, employe.getPassword());
+	        instruction.setObject(5, employe.getDateArrivee());
+	        instruction.setObject(6, employe.getDateDepart());
+	        instruction.setInt(7, employe.getId());
 	        instruction.executeUpdate();
 	    }
 	    catch (SQLException exception)

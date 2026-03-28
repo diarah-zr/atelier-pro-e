@@ -145,7 +145,7 @@ public class LigueConsole
 
 	private Menu menuActionsEmploye(Ligue ligue, Employe employe) {
 	    Menu menu = new Menu("Actions sur " + employe.getNom() + " " + employe.getPrenom());
-	    menu.add(new Option("Modifier", "m", () -> employeConsole.editerEmploye(employe)));
+	    menu.add(employeConsole.editerEmploye(employe)); 
 	    menu.add(new Option("Supprimer", "s", () -> employe.remove()));
 	    menu.addBack("q");
 	    return menu;
