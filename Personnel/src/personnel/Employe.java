@@ -180,15 +180,17 @@ public class Employe implements Serializable, Comparable<Employe>
 	
 	public void remove()
 	{
-		Employe root = gestionPersonnel.getRoot();
-		if (this != root)
-		{
-			if (estAdmin(getLigue()))
-				getLigue().setAdministrateur(root);
-			getLigue().remove(this);
-		}
-		else
-			throw new ImpossibleDeSupprimerRoot();
+	    Employe root = gestionPersonnel.getRoot();
+	    if (this != root)
+	    {
+	        if (estAdmin(getLigue()))
+	            getLigue().setAdministrateur(root);
+	        getLigue().remove(this);
+	        try { gestionPersonnel.delete(this); }  
+	        catch (SauvegardeImpossible e) { System.out.println("Erreur suppression employé : " + e.getMessage()); }
+	    }
+	    else
+	        throw new ImpossibleDeSupprimerRoot();
 	}
 
 	@Override

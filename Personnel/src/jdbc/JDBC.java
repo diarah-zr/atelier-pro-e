@@ -193,6 +193,7 @@ public class JDBC implements Passerelle
 	        throw new SauvegardeImpossible(exception);
 	    }
 	}
+	
 	@Override
 	public void update(Employe employe) throws SauvegardeImpossible
 	{
@@ -210,6 +211,22 @@ public class JDBC implements Passerelle
 	        instruction.setObject(5, employe.getDateArrivee());
 	        instruction.setObject(6, employe.getDateDepart());
 	        instruction.setInt(7, employe.getId());
+	        instruction.executeUpdate();
+	    }
+	    catch (SQLException exception)
+	    {
+	        exception.printStackTrace();
+	        throw new SauvegardeImpossible(exception);
+	    }
+	}
+	@Override
+	public void delete(Employe employe) throws SauvegardeImpossible
+	{
+	    try
+	    {
+	        PreparedStatement instruction = connection.prepareStatement(
+	            "delete from employe where numero_Employe = ?");
+	        instruction.setInt(1, employe.getId());
 	        instruction.executeUpdate();
 	    }
 	    catch (SQLException exception)
