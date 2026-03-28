@@ -37,7 +37,7 @@ public class JDBC implements Passerelle
 	    GestionPersonnel gestionPersonnel = new GestionPersonnel();
 	    try
 	    {
-	      
+	       
 	        String requeteRoot = "select numero_Employe, nom_Employe, prenom_Employe, " +
 	                             "mail_Employe, password_Employe " +
 	                             "from employe where numero_Ligue is null";
@@ -61,27 +61,34 @@ public class JDBC implements Passerelle
 	        String requeteLigues = "select numero_Ligue, nom_Ligue from ligue";
 	        ResultSet ligues = instruction.executeQuery(requeteLigues);
 	        while (ligues.next())
-	        {
-	            Ligue ligue = gestionPersonnel.addLigue(
-	                ligues.getInt("numero_Ligue"),
+	            gestionPersonnel.addLigue(
+	                ligues.getInt("numero_Ligue"), 
 	                ligues.getString("nom_Ligue"));
 
-	            
-	            PreparedStatement instructionEmployes = connection.prepareStatement(
-	                "select numero_Employe, nom_Employe, prenom_Employe, " +
-	                "mail_Employe, password_Employe, date_arrivee, date_depart " +
-	                "from employe where numero_Ligue = ?");
-	            instructionEmployes.setInt(1, ligue.getId());
-	            ResultSet employes = instructionEmployes.executeQuery();
+	        
+	        String requeteEmployes = 
+	            "select e.numero_Employe, e.nom_Employe, e.prenom_Employe, " +
+	            "e.mail_Employe, e.password_Employe, e.date_arrivee, e.date_depart, " +
+	            "e.numero_Ligue " +
+	            "from employe e " +
+	            "join ligue l on e.numero_Ligue = l.numero_Ligue " +  // ← JOINTURE
+	            "where e.numero_Ligue is not null";
+	        ResultSet employes = instruction.executeQuery(requeteEmployes);
+	        while (employes.next())
+	        {
+	            int numeroLigue = employes.getInt("numero_Ligue");
+	            Ligue ligue = gestionPersonnel.getLigues().stream()
+	                .filter(l -> l.getId() == numeroLigue)
+	                .findFirst()
+	                .orElse(null);
 
-	            while (employes.next())
+	            if (ligue != null)
 	            {
 	                LocalDate dateArrivee = employes.getDate("date_arrivee") != null
 	                    ? employes.getDate("date_arrivee").toLocalDate() : null;
 	                LocalDate dateDepart = employes.getDate("date_depart") != null
 	                    ? employes.getDate("date_depart").toLocalDate() : null;
 
-	                
 	                ligue.addEmploye(
 	                    employes.getInt("numero_Employe"),
 	                    employes.getString("nom_Employe"),
