@@ -37,7 +37,6 @@ public class JDBC implements Passerelle
 	    GestionPersonnel gestionPersonnel = new GestionPersonnel();
 	    try
 	    {
-	       
 	        String requeteRoot = "select numero_Employe, nom_Employe, prenom_Employe, " +
 	                             "mail_Employe, password_Employe " +
 	                             "from employe where numero_Ligue is null";
@@ -57,32 +56,23 @@ public class JDBC implements Passerelle
 	            gestionPersonnel.addRoot("root", "toor");
 	        }
 
-	        
-	        String requeteLigues = "select numero_Ligue, nom_Ligue from ligue";
+	        String requeteLigues = "select numero_Ligue, nom_Ligue, numero_Admin from ligue";
 	        ResultSet ligues = instruction.executeQuery(requeteLigues);
 	        while (ligues.next())
-	            gestionPersonnel.addLigue(
-	                ligues.getInt("numero_Ligue"), 
+	        {
+	            Ligue ligue = gestionPersonnel.addLigue(
+	                ligues.getInt("numero_Ligue"),
 	                ligues.getString("nom_Ligue"));
 
-	        
-	        String requeteEmployes = 
-	            "select e.numero_Employe, e.nom_Employe, e.prenom_Employe, " +
-	            "e.mail_Employe, e.password_Employe, e.date_arrivee, e.date_depart, " +
-	            "e.numero_Ligue " +
-	            "from employe e " +
-	            "join ligue l on e.numero_Ligue = l.numero_Ligue " +  // ← JOINTURE
-	            "where e.numero_Ligue is not null";
-	        ResultSet employes = instruction.executeQuery(requeteEmployes);
-	        while (employes.next())
-	        {
-	            int numeroLigue = employes.getInt("numero_Ligue");
-	            Ligue ligue = gestionPersonnel.getLigues().stream()
-	                .filter(l -> l.getId() == numeroLigue)
-	                .findFirst()
-	                .orElse(null);
+	            PreparedStatement instructionEmployes = connection.prepareStatement(
+	                "select e.numero_Employe, e.nom_Employe, e.prenom_Employe, " +
+	                "e.mail_Employe, e.password_Employe, e.date_arrivee, e.date_depart " +
+	                "from employe e " +
+	                "join ligue l on e.numero_Ligue = l.numero_Ligue " +
+	                "where e.numero_Ligue = ?");	            instructionEmployes.setInt(1, ligue.getId());
+	            ResultSet employes = instructionEmployes.executeQuery();
 
-	            if (ligue != null)
+	            while (employes.next())
 	            {
 	                LocalDate dateArrivee = employes.getDate("date_arrivee") != null
 	                    ? employes.getDate("date_arrivee").toLocalDate() : null;
@@ -97,6 +87,19 @@ public class JDBC implements Passerelle
 	                    employes.getString("password_Employe"),
 	                    dateArrivee,
 	                    dateDepart);
+	            }
+
+	            int numeroAdmin = ligues.getInt("numero_Admin");
+	            if (numeroAdmin == gestionPersonnel.getRoot().getId())
+	            {
+	                ligue.setAdministrateur(gestionPersonnel.getRoot());
+	            }
+	            else
+	            {
+	                ligue.getEmployes().stream()
+	                    .filter(e -> e.getId() == numeroAdmin)
+	                    .findFirst()
+	                    .ifPresent(ligue::setAdministrateur);
 	            }
 	        }
 	    }

@@ -3,6 +3,8 @@ package commandLine;
 import static commandLineMenus.rendering.examples.util.InOut.getString;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import commandLineMenus.List;
 import commandLineMenus.Menu;
@@ -14,6 +16,7 @@ public class LigueConsole
 {
 	private GestionPersonnel gestionPersonnel;
 	private EmployeConsole employeConsole;
+    private Map<Ligue, Menu> menus = new HashMap<>();  
 
 	public LigueConsole(GestionPersonnel gestionPersonnel, EmployeConsole employeConsole)
 	{
@@ -68,14 +71,18 @@ public class LigueConsole
 	
 	private Menu editerLigue(Ligue ligue)
 	{
-		Menu menu = new Menu("Editer " + ligue.getNom());
-		menu.add(afficher(ligue));
-		menu.add(gererEmployes(ligue));
-		menu.add(changerAdministrateur(ligue));
-		menu.add(changerNom(ligue));
-		menu.add(supprimer(ligue));
-		menu.addBack("q");
-		return menu;
+	    if (menus.containsKey(ligue))
+	        return menus.get(ligue);
+
+	    Menu menu = new Menu("Editer " + ligue.getNom());
+	    menu.add(afficher(ligue));
+	    menu.add(gererEmployes(ligue));
+	    menu.add(changerAdministrateur(ligue));
+	    menu.add(changerNom(ligue));
+	    menu.add(supprimer(ligue));
+	    menu.addBack("q");
+	    menus.put(ligue, menu);
+	    return menu;
 	}
 
 	private Option changerNom(final Ligue ligue)
