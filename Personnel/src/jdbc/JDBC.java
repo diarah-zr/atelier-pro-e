@@ -126,27 +126,26 @@ public class JDBC implements Passerelle
 	}
 	
 	@Override
-	public int insert(Ligue ligue) throws SauvegardeImpossible 
+	public int insert(Ligue ligue) throws SauvegardeImpossible
 	{
-		try 
-		{
-			PreparedStatement instruction;
-			instruction = connection.prepareStatement(
-				    "insert into ligue (nom_Ligue, numero_Admin) values(?, ?)", Statement.RETURN_GENERATED_KEYS);
-				instruction.setString(1, ligue.getNom());
-				instruction.setInt(2, ligue.getAdministrateur().getId());		
-			instruction.executeUpdate();
-			ResultSet id = instruction.getGeneratedKeys();
-			id.next();
-			return id.getInt(1);
-		} 
-		catch (SQLException exception) 
-		{
-			exception.printStackTrace();
-			throw new SauvegardeImpossible(exception);
-		}		
-	}
-	
+	    try
+	    {
+	        PreparedStatement instruction = connection.prepareStatement(
+	            "insert into ligue (nom_Ligue, numero_Admin) values (?, ?)",
+	            Statement.RETURN_GENERATED_KEYS);
+	        instruction.setString(1, ligue.getNom());
+	        instruction.setInt(2, ligue.getAdministrateur().getId()); // root par défaut
+	        instruction.executeUpdate();
+	        ResultSet id = instruction.getGeneratedKeys();
+	        id.next();
+	        return id.getInt(1);
+	    }
+	    catch (SQLException exception)
+	    {
+	        exception.printStackTrace();
+	        throw new SauvegardeImpossible(exception);
+	    }
+	}	
 	@Override
 	public int insert(Employe employe) throws SauvegardeImpossible
 	{
@@ -237,4 +236,28 @@ public class JDBC implements Passerelle
 	        throw new SauvegardeImpossible(exception);
 	    }
 	}
+	
+	 @Override
+	 public void delete(Ligue ligue) throws SauvegardeImpossible
+	 {
+	     try
+	     {
+	         // Supprimer d'abord tous les employés de la ligue
+	         PreparedStatement supprimerEmployes = connection.prepareStatement(
+	             "delete from employe where numero_Ligue = ?");
+	         supprimerEmployes.setInt(1, ligue.getId());
+	         supprimerEmployes.executeUpdate();
+
+	         PreparedStatement supprimerLigue = connection.prepareStatement(
+	             "delete from ligue where numero_Ligue = ?");
+	         supprimerLigue.setInt(1, ligue.getId());
+	         supprimerLigue.executeUpdate();
+	     }
+	     catch (SQLException exception)
+	     {
+	         exception.printStackTrace();
+	         throw new SauvegardeImpossible(exception);
+	     }
+	 }
+
 }

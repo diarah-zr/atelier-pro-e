@@ -157,7 +157,15 @@ public class Ligue implements Serializable, Comparable<Ligue>
 	
 	public void remove()
 	{
-		gestionPersonnel.remove(this);
+	    try
+	    {
+	        gestionPersonnel.delete(this);  // ← supprime en BDD (employés + ligue)
+	    }
+	    catch (SauvegardeImpossible e)
+	    {
+	        System.out.println("Erreur suppression ligue : " + e.getMessage());
+	    }
+	    gestionPersonnel.remove(this);      // ← supprime de la mémoire
 	}
 	
 
