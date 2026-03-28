@@ -106,14 +106,8 @@ public class Ligue implements Serializable, Comparable<Ligue>
 	    if (administrateur != root && administrateur.getLigue() != this)
 	        throw new DroitsInsuffisants();
 	    this.administrateur = administrateur;
-	    try
-	    {
-	        gestionPersonnel.update(this);
-	    }
-	    catch (SauvegardeImpossible e)
-	    {
-	        System.out.println("Erreur lors de la mise à jour de la ligue : " + e.getMessage());
-	    }
+	    try { gestionPersonnel.update(this); }
+	    catch (SauvegardeImpossible e) { System.out.println("Erreur mise à jour administrateur : " + e.getMessage()); }
 	}
 	/**
 	 * Retourne les employés de la ligue.
