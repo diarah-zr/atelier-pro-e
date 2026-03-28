@@ -37,7 +37,7 @@ public class JDBC implements Passerelle
 	    GestionPersonnel gestionPersonnel = new GestionPersonnel();
 	    try
 	    {
-	        // ── Chargement du root ─────────────────────────────────────────
+	      
 	        String requeteRoot = "select numero_Employe, nom_Employe, prenom_Employe, " +
 	                             "mail_Employe, password_Employe " +
 	                             "from employe where numero_Ligue is null";
@@ -57,36 +57,31 @@ public class JDBC implements Passerelle
 	            gestionPersonnel.addRoot("root", "toor");
 	        }
 
-	        // ── Chargement des ligues ──────────────────────────────────────
+	        
 	        String requeteLigues = "select numero_Ligue, nom_Ligue from ligue";
 	        ResultSet ligues = instruction.executeQuery(requeteLigues);
 	        while (ligues.next())
-	            gestionPersonnel.addLigue(ligues.getInt("numero_Ligue"), ligues.getString("nom_Ligue"));
-
-	        // ── Chargement des employés ────────────────────────────────────
-	        String requeteEmployes = "select numero_Employe, nom_Employe, prenom_Employe, " +
-	                                 "mail_Employe, password_Employe, numero_Ligue, " +
-	                                 "date_arrivee, date_depart " +
-	                                 "from employe where numero_Ligue is not null";
-	        ResultSet employes = instruction.executeQuery(requeteEmployes);
-	        while (employes.next())
 	        {
-	            // Retrouver la ligue correspondante
-	            int numeroLigue = employes.getInt("numero_Ligue");
-	            Ligue ligue = gestionPersonnel.getLigues().stream()
-	                .filter(l -> l.getId() == numeroLigue)
-	                .findFirst()
-	                .orElse(null);
+	            Ligue ligue = gestionPersonnel.addLigue(
+	                ligues.getInt("numero_Ligue"),
+	                ligues.getString("nom_Ligue"));
 
-	            if (ligue != null)
+	            
+	            PreparedStatement instructionEmployes = connection.prepareStatement(
+	                "select numero_Employe, nom_Employe, prenom_Employe, " +
+	                "mail_Employe, password_Employe, date_arrivee, date_depart " +
+	                "from employe where numero_Ligue = ?");
+	            instructionEmployes.setInt(1, ligue.getId());
+	            ResultSet employes = instructionEmployes.executeQuery();
+
+	            while (employes.next())
 	            {
-	                // Lire les dates (peuvent être null)
 	                LocalDate dateArrivee = employes.getDate("date_arrivee") != null
 	                    ? employes.getDate("date_arrivee").toLocalDate() : null;
 	                LocalDate dateDepart = employes.getDate("date_depart") != null
 	                    ? employes.getDate("date_depart").toLocalDate() : null;
 
-	                // Utiliser addEmploye avec id (sans réinsertion)
+	                
 	                ligue.addEmploye(
 	                    employes.getInt("numero_Employe"),
 	                    employes.getString("nom_Employe"),
